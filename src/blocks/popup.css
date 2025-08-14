@@ -1,0 +1,357 @@
+/* === BLOCO BASE === */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 25px 0px #00000026;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+/*corrigido para seguir BEM */
+.popup_type_profile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 25px 0px #00000026;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+/*corrigido para seguir BEM */
+.popup_type_confirm {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/*corrigido para seguir BEM */
+.popup_type_avatar {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* === MODIFICADORES DO BLOCO === */
+.popup_opened {
+  display: flex;
+}
+
+.popup_type_confirm.popup_opened {
+  display: flex;
+}
+
+.popup_type_avatar.popup_opened {
+  display: flex;
+}
+
+/* === ELEMENTOS === */
+.popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  width: 100%;
+  height: 100vh; /* mantém como estava */
+  display: block;
+}
+
+.popup__container {
+  position: relative;
+  width: 430px;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+
+.popup__profile-edit {
+  width: 330px;
+  font-weight: 900;
+  font-size: 24px;
+  color: #000000;
+  margin: 34px 64px 0 36px;
+}
+
+.popup__text {
+  font-size: 24px;
+  font-weight: 900;
+  width: 330px;
+  height: 29.05px; /* mantém como estava */
+  color: #000000;
+  margin: 34px 64px 0 36px;
+}
+
+.popup__close {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  position: absolute;
+  right: -40px;
+  top: -45px;
+  border: none;
+  cursor: pointer;
+}
+
+.popup__close-icon {
+  width: 40px;
+  height: 40px;
+  background: none;
+}
+
+.popup__input-title,
+.popup__input-name,
+.popup__input-about,
+.popup__input-link {
+  width: 358px;
+  font-size: 14px;
+  line-height: 16.94px;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0 0 13.26px;
+}
+
+.popup__input-title {
+  height: 14px;
+  margin: 54px 36px 0;
+}
+
+.popup__input-link {
+  height: 14px;
+  margin: 29.74px 36px 0;
+  padding-bottom: 13.34px;
+}
+
+.popup__input-name {
+  height: 27.26px;
+  margin: 54px 36px 0;
+}
+
+.popup__input-about {
+  height: 27.34px;
+  margin: 29.74px 36px 0;
+}
+
+.popup__submit-form {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21.78px;
+  width: 358px;
+  height: 50.15px;
+  background-color: #000000;
+  color: #ffffff;
+  margin: 48px 36px 36.51px;
+  padding: 0;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+.popup__add-button:hover {
+  opacity: 0.6;
+}
+
+.popup__submit-form:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/*classe corrigida para seguir BEM */
+.popup__confirm-submit-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* === ESTADOS / MODIFICADORES DE ELEMENTOS === */
+.popup__input-error {
+  color: red;
+  font-size: 12px;
+  margin: 5px 36px 0;
+  text-align: left;
+  display: none;
+}
+
+.popup__input-error_active {
+  display: block;
+}
+
+.popup__input_type_error {
+  border: 2px solid red;
+}
+
+.popup__submit_inactive {
+  background-color: #fff;
+  color: #bdbdbd;
+  border: 2px solid #fe8383;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.popup__submit:disabled {
+  background-color: #fff;
+  color: #bdbdbd;
+  border: 2px solid #bdbdbd;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.popup__submit {
+  background-color: #000000;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.popup__submit-form_inactive {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.form__input-error_active {
+  display: block;
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* === BLOCO INDEPENDENTE: popup-image === */
+.popup-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup-image__content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.popup-image__img {
+  max-width: 75vw;
+  max-height: 75vh;
+  display: block;
+  margin: 0 auto;
+}
+
+.popup-image__title {
+  width: 291px;
+  text-align: left;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.popup-image__close {
+  width: 40px;
+  position: absolute;
+  top: -50px;
+  right: -35px;
+  padding: 0;
+  color: #ffffff;
+  background: none;
+  border: none;
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.popup-image__hidden {
+  display: none;
+}
+
+/* === MEDIA QUERIES === */
+@media screen and (max-width: 640px) {
+  .popup__add-button {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+  }
+
+  .popup__container {
+    width: 282px;
+  }
+
+  .popup__profile-edit {
+    width: 238px;
+    margin: 22px 22px;
+  }
+
+  .popup__input-about {
+    width: 238px;
+    margin: 30px 22px 0;
+  }
+
+  .popup__text {
+    width: 238px;
+    font-size: 18px;
+    margin: 25px 22px 0;
+  }
+
+  .popup__close {
+    width: 26px;
+    height: 26px;
+    right: 10px;
+  }
+
+  .popup__close-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .popup__input-title {
+    width: 238px;
+    margin: 76px 22px 0;
+  }
+
+  .popup__input-name {
+    width: 238px;
+    margin: 22px 22px 0;
+  }
+
+  .popup__input-link {
+    width: 238px;
+    margin: 30px 22px 0;
+  }
+
+  .popup__submit-form {
+    width: 238px;
+    margin: 46px 22px 25px;
+  }
+
+  .popup-image__img {
+    width: 240px;
+    height: 299px;
+  }
+
+  .popup-image__close {
+    width: 30px;
+    height: 30px;
+    right: -30px;
+  }
+
+  .popup-image__title {
+    width: 240px;
+  }
+}

@@ -1,0 +1,95 @@
+.card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 880px;
+  grid-gap: 20px 17px;
+  margin: 50px auto 67px;
+}
+.card__elements {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  width: 282px;
+  height: 361px;
+  border-radius: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.card__image {
+  width: 282px;
+  height: 282px;
+  border-radius: 10px 10px 0 0;
+}
+.card__description {
+  width: 282px;
+  display: flex;
+  background: rgba(255, 255, 255, 1);
+  margin: 0;
+}
+.card__text-description {
+  width: 246px;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 29.05px;
+  color: rgba(0, 0, 0, 1);
+  margin: 25px 15px 31px 21px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.card__btn-like {
+  background: rgba(255, 255, 255, 1);
+  border: none;
+  margin-right: 18px;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.card__like {
+  width: 21px;
+  height: 19px;
+}
+
+.card__btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  z-index: 0;
+}
+
+.card__delete-icon {
+  width: 18px;
+  height: 19.3px;
+}
+
+/* hover */
+.card__like:hover {
+  opacity: 0.5;
+}
+
+.card__btn-like:active {
+  color: rgba(0, 0, 0);
+}
+
+@media screen and (max-width: 920px) {
+  .card {
+    grid-template-columns: repeat(2, 282px);
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .card {
+    grid-template-columns: 1fr;
+    max-width: 282px;
+    margin: 36px auto 50px;
+  }
+}
