@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import Card from "./components/Card/Card";
-import { CurrentUserContext } from "@contexts/CurrentUserContext";
+import Card from "@componentsMain/Card/Card.jsx";
+import { CurrentUserContext } from "@contexts/CurrentUserContext.js";
 
-// Ícones
-import profileEditIcon from "../../images/vetores/Vector_profile-info.png";
-import addButtonIcon from "../../images/vetores/Vector_addButton.png";
+import profileEditIcon from "@images/vetores/Vector_profile-info.png";
+import addButtonIcon from "@images/vetores/Vector_addButton.png";
 
 export default function Main({
   cards,
@@ -79,12 +78,8 @@ export default function Main({
             card={cardItem}
             currentUser={safeUser}
             onCardClick={() => openImagePopup(cardItem)}
-            onCardLike={async (card) => {
-              // Chama a função passada do App
-              const updatedCard = await onCardLike(card);
-              return updatedCard; // Retorna para o Card atualizar o estado local
-            }}
-            onCardDelete={onCardDelete}
+            onCardLike={() => onCardLike(cardItem)}
+            onCardDelete={() => onCardDelete(cardItem)}
           />
         ))}
       </section>

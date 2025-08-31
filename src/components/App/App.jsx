@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import Header from "@components/Header/Header";
-import Main from "@components/Main/Main";
-import Footer from "@components/Footer/Footer";
-import { api } from "@utils/api";
-import { CurrentUserContext } from "@contexts/CurrentUserContext";
+import Header from "@components/Header/Header.jsx";
+import Main from "@components/Main/Main.jsx";
+import Footer from "@components/Footer/Footer.jsx";
+import { api } from "@utils/api.js";
+import { CurrentUserContext } from "@contexts/CurrentUserContext.js";
 
 // Popups
-import Popup from "@componentsMain/Popup/Popup";
-import ImagePopup from "@componentsMain/Popup/components/ImagePopup/ImagePopup";
-import EditProfile from "@componentsMain/Popup/components/EditProfile/EditProfile";
-import EditAvatar from "@componentsMain/Popup/components/EditAvatar/EditAvatar";
-import NewCard from "@componentsMain/Popup/components/NewCard/NewCard";
+import Popup from "@componentsMain/Popup/Popup.jsx";
+import EditProfile from "@componentsMain/Popup/EditProfile/EditProfile.jsx";
+import EditAvatar from "@componentsMain/Popup/EditAvatar/EditAvatar.jsx";
+import NewCard from "@componentsMain/Popup/NewCard/NewCard.jsx";
+import RemoveCard from "@componentsMain/Popup/RemoveCard/RemoveCard.jsx";
 
 function App() {
   const [currentUser, setCurrentUser] = useState({});
@@ -19,62 +19,18 @@ function App() {
   const [cardToRemove, setCardToRemove] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
 
-  // Normaliza cards
-  const normalizeCard = (card) => ({
-    ...card,
-    owner: card.owner._id || card.owner,
-    likes: (card.likes || []).map((l) => l._id || l),
-    isLiked: card.likes?.some((id) => id === currentUser._id) || false,
-  });
-
   // Carregar dados iniciais
   useEffect(() => {
     api.getUserInfo().then(setCurrentUser).catch(console.error);
-    api
-      .getInitialCards()
-      .then((data) => setCards(data.map(normalizeCard)))
-      .catch(console.error);
+    api.getInitialCards().then(setCards).catch(console.error);
   }, []);
 
-  // Atualizar perfil
-  const handleUpdateUser = (data) =>
-    api.setUserInfo(data).then(setCurrentUser).catch(console.error);
-
-  // Atualizar avatar
-  const handleUpdateAvatar = async ({ avatar }) => {
-    try {
-      const updatedUser = await api.updateAvatar(avatar);
-      setCurrentUser(updatedUser);
-    } catch (err) {
-      console.error("Erro ao atualizar avatar:", err);
-    }
-  };
-
-  // Adicionar card
-  const handleAddPlace = async (data) => {
-    try {
-      const newCard = await api.addCard(data);
-      setCards((state) => [normalizeCard(newCard), ...state]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Curtir/descurtir card (apenas altera isLiked)
+  // Curtir/descurtir card
   const handleCardLike = async (card) => {
-    try {
-      // Alterna o like na API
-      await api.changeLikeCardStatus(card._id, !card.isLiked);
-
-      // Atualiza estado local apenas com o booleano
-      setCards((state) =>
-        state.map((c) =>
-          c._id === card._id ? { ...c, isLiked: !c.isLiked } : c
-        )
-      );
-    } catch (err) {
-      console.error("Erro ao curtir/descurtir card:", err);
-    }
+    await api.changeLikeCardStatus(card._id, !card.isLiked);
+    setCards((state) =>
+      state.map((c) => (c._id === card._id ? { ...c, isLiked: !c.isLiked } : c))
+    );
   };
 
   // Abrir/fechar popups
@@ -82,7 +38,40 @@ function App() {
   const openImagePopup = (card) => setSelectedPopup({ type: "image", card });
   const closePopup = () => setSelectedPopup(null);
 
-  // Exclusão de card
+  // Adicionar card
+  const handleAddPlace = async (data) => {
+    try {
+      const newCard = await api.addCard(data);
+      setCards((state) => [newCard, ...state]);
+      closePopup();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Atualizar perfil
+  const handleUpdateUser = async (data) => {
+    try {
+      const updatedUser = await api.setUserInfo(data);
+      setCurrentUser(updatedUser);
+      closePopup();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Atualizar avatar
+  const handleUpdateAvatar = async (avatar) => {
+    try {
+      const updatedUser = await api.updateAvatar(avatar);
+      setCurrentUser(updatedUser);
+      closePopup();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Remover card
   const handleOpenRemoveCard = (card) => setCardToRemove(card);
   const handleCloseRemoveCard = () => {
     setCardToRemove(null);
@@ -101,7 +90,7 @@ function App() {
     }
   };
 
-  if (!currentUser || !currentUser.name) return <p>Carregando...</p>;
+  if (!currentUser.name) return <p>Carregando...</p>;
 
   return (
     <CurrentUserContext.Provider
@@ -120,52 +109,45 @@ function App() {
 
         {/* Popups */}
         {selectedPopup?.key === "editProfile" && (
-          <Popup
-            title="Editar Perfil"
-            onClose={closePopup}
-            type="profile"
-            isOpen
-          >
+          <Popup title="Editar Perfil" onClose={closePopup} isOpen>
             <EditProfile onUpdateUser={handleUpdateUser} onClose={closePopup} />
           </Popup>
         )}
 
         {selectedPopup?.key === "editAvatar" && (
-          <Popup
-            title="Editar Avatar"
-            onClose={closePopup}
-            type="avatar"
-            isOpen
-          >
-            <EditAvatar onClose={closePopup} />
+          <Popup title="Editar Avatar" onClose={closePopup} isOpen>
+            <EditAvatar
+              onUpdateAvatar={handleUpdateAvatar}
+              onClose={closePopup}
+            />
           </Popup>
         )}
 
         {selectedPopup?.key === "newCard" && (
-          <Popup title="Novo Card" onClose={closePopup} type="profile" isOpen>
+          <Popup title="Novo Card" onClose={closePopup} isOpen>
             <NewCard onAddPlace={handleAddPlace} onClose={closePopup} />
           </Popup>
         )}
 
         {selectedPopup?.type === "image" && (
-          <ImagePopup card={selectedPopup.card} onClose={closePopup} />
+          <Popup onClose={closePopup} isOpen>
+            <img
+              src={selectedPopup.card.link}
+              alt={selectedPopup.card.name}
+              className="popup__image"
+            />
+            <p className="popup__caption">{selectedPopup.card.name}</p>
+          </Popup>
         )}
 
+        {/* Remove Card */}
         {cardToRemove && (
-          <Popup
-            title="Excluir este card?"
-            type="remove-card"
-            isOpen
+          <RemoveCard
+            isOpen={!!cardToRemove}
             onClose={handleCloseRemoveCard}
-          >
-            <button
-              className="popup__confirm-submit-button"
-              onClick={handleConfirmRemoveCard}
-              disabled={isRemoving}
-            >
-              {isRemoving ? "Excluindo..." : "Sim, excluir"}
-            </button>
-          </Popup>
+            onConfirmDelete={handleConfirmRemoveCard}
+            isRemoving={isRemoving}
+          />
         )}
       </div>
     </CurrentUserContext.Provider>
