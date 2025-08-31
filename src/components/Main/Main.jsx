@@ -1,7 +1,13 @@
 import React, { useContext } from "react";
 import Card from "@componentsMain/Card/Card.jsx";
 import { CurrentUserContext } from "@contexts/CurrentUserContext.js";
+import Popup from "@componentsMain/Popup/Popup.jsx";
+import EditProfile from "@componentsMain/Popup/EditProfile/EditProfile.jsx";
+import EditAvatar from "@componentsMain/Popup/EditAvatar/EditAvatar.jsx";
+import NewCard from "@componentsMain/Popup/NewCard/NewCard.jsx";
+import RemoveCard from "@componentsMain/Popup/RemoveCard/RemoveCard.jsx";
 
+// Ícones
 import profileEditIcon from "@images/vetores/Vector_profile-info.png";
 import addButtonIcon from "@images/vetores/Vector_addButton.png";
 
@@ -11,18 +17,22 @@ export default function Main({
   onCardDelete,
   openPopupByKey,
   openImagePopup,
+  selectedPopup,
+  closePopup,
+  cardToRemove,
+  handleConfirmRemoveCard,
+  isRemoving,
 }) {
   const { currentUser } = useContext(CurrentUserContext);
   const safeUser = currentUser || { _id: "", name: "", about: "", avatar: "" };
 
   return (
     <main className="content">
-      {/* Perfil */}
       <section className="profile">
         <div className="profile__avatar-container">
           <img
             className="profile__avatar"
-            src={safeUser.avatar || ""}
+            src={safeUser.avatar || null}
             alt={`Foto de perfil de ${safeUser.name}`}
           />
           <button
@@ -69,7 +79,6 @@ export default function Main({
         </button>
       </section>
 
-      {/* Cards */}
       <section className="card">
         {cards.length === 0 && <p>Nenhum card ainda</p>}
         {cards.map((cardItem) => (
@@ -78,11 +87,46 @@ export default function Main({
             card={cardItem}
             currentUser={safeUser}
             onCardClick={() => openImagePopup(cardItem)}
-            onCardLike={() => onCardLike(cardItem)}
-            onCardDelete={() => onCardDelete(cardItem)}
+            onCardLike={onCardLike}
+            onCardDelete={onCardDelete}
           />
         ))}
       </section>
+
+      {/* Popups */}
+      {selectedPopup?.key === "editProfile" && (
+        <Popup title="Editar Perfil" onClose={closePopup} isOpen>
+          <EditProfile onClose={closePopup} />
+        </Popup>
+      )}
+      {selectedPopup?.key === "editAvatar" && (
+        <Popup title="Editar Avatar" onClose={closePopup} isOpen>
+          <EditAvatar onClose={closePopup} />
+        </Popup>
+      )}
+      {selectedPopup?.key === "newCard" && (
+        <Popup title="Novo Card" onClose={closePopup} isOpen>
+          <NewCard onClose={closePopup} />
+        </Popup>
+      )}
+      {selectedPopup?.type === "image" && (
+        <Popup onClose={closePopup} isOpen>
+          <img
+            src={selectedPopup.card.link}
+            alt={selectedPopup.card.name}
+            className="popup__image"
+          />
+          <p className="popup__caption">{selectedPopup.card.name}</p>
+        </Popup>
+      )}
+      {cardToRemove && (
+        <RemoveCard
+          isOpen={!!cardToRemove}
+          onClose={closePopup}
+          onConfirmDelete={handleConfirmRemoveCard}
+          isRemoving={isRemoving}
+        />
+      )}
     </main>
   );
 }

@@ -5,15 +5,8 @@ import Footer from "@components/Footer/Footer.jsx";
 import { api } from "@utils/api.js";
 import { CurrentUserContext } from "@contexts/CurrentUserContext.js";
 
-// Popups
-import Popup from "@componentsMain/Popup/Popup.jsx";
-import EditProfile from "@componentsMain/Popup/EditProfile/EditProfile.jsx";
-import EditAvatar from "@componentsMain/Popup/EditAvatar/EditAvatar.jsx";
-import NewCard from "@componentsMain/Popup/NewCard/NewCard.jsx";
-import RemoveCard from "@componentsMain/Popup/RemoveCard/RemoveCard.jsx";
-
 function App() {
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(null);
   const [cards, setCards] = useState([]);
   const [selectedPopup, setSelectedPopup] = useState(null);
   const [cardToRemove, setCardToRemove] = useState(null);
@@ -21,28 +14,54 @@ function App() {
 
   // Carregar dados iniciais
   useEffect(() => {
-    api.getUserInfo().then(setCurrentUser).catch(console.error);
-    api.getInitialCards().then(setCards).catch(console.error);
+    api
+      .getUserInfo()
+      .then((user) => {
+        setCurrentUser(user);
+        return api.getInitialCards().then((cardsData) =>
+          cardsData.map((card) => ({
+            ...card,
+            _id: card._id || card.id,
+            owner: card.owner._id || card.owner,
+            isLiked: card.likes?.some((id) => id === user._id) || false,
+          }))
+        );
+      })
+      .then((normalizedCards) => setCards(normalizedCards))
+      .catch(console.error);
   }, []);
 
   // Curtir/descurtir card
   const handleCardLike = async (card) => {
-    await api.changeLikeCardStatus(card._id, !card.isLiked);
-    setCards((state) =>
-      state.map((c) => (c._id === card._id ? { ...c, isLiked: !c.isLiked } : c))
-    );
+    if (!card._id) return;
+    try {
+      await api.changeLikeCardStatus(card._id, !card.isLiked);
+      const updatedCard = { ...card, isLiked: !card.isLiked };
+      setCards((state) =>
+        state.map((c) => (c._id === card._id ? updatedCard : c))
+      );
+      return updatedCard;
+    } catch (err) {
+      console.error("Erro ao curtir/descurtir card:", err);
+    }
   };
 
   // Abrir/fechar popups
   const openPopupByKey = (key) => setSelectedPopup({ key });
   const openImagePopup = (card) => setSelectedPopup({ type: "image", card });
-  const closePopup = () => setSelectedPopup(null);
+  const closePopup = () => {
+    setSelectedPopup(null);
+    setCardToRemove(null);
+  };
 
   // Adicionar card
   const handleAddPlace = async (data) => {
     try {
       const newCard = await api.addCard(data);
-      setCards((state) => [newCard, ...state]);
+      setCards((state) => [
+        { ...newCard, _id: newCard._id || newCard.id, isLiked: false },
+        ...state,
+      ]);
       closePopup();
     } catch (err) {
       console.error(err);
@@ -73,28 +92,30 @@ function App() {
 
   // Remover card
   const handleOpenRemoveCard = (card) => setCardToRemove(card);
-  const handleCloseRemoveCard = () => {
-    setCardToRemove(null);
-    setIsRemoving(false);
-  };
   const handleConfirmRemoveCard = async () => {
     if (!cardToRemove) return;
     setIsRemoving(true);
     try {
       await api.deleteCard(cardToRemove._id);
       setCards((state) => state.filter((c) => c._id !== cardToRemove._id));
-      handleCloseRemoveCard();
+      closePopup();
+      setIsRemoving(false);
     } catch (err) {
       console.error(err);
       setIsRemoving(false);
     }
   };
 
-  if (!currentUser.name) return <p>Carregando...</p>;
+  if (!currentUser) return <p>Carregando...</p>;
 
   return (
     <CurrentUserContext.Provider
-      value={{ currentUser, handleUpdateUser, handleUpdateAvatar }}
+      value={{
+        currentUser,
+        handleUpdateUser,
+        handleUpdateAvatar,
+        handleAddPlace,
+      }}
     >
       <div className="page">
         <Header />
@@ -104,51 +125,13 @@ function App() {
           onCardDelete={handleOpenRemoveCard}
           openPopupByKey={openPopupByKey}
           openImagePopup={openImagePopup}
+          selectedPopup={selectedPopup}
+          closePopup={closePopup}
+          cardToRemove={cardToRemove}
+          handleConfirmRemoveCard={handleConfirmRemoveCard}
+          isRemoving={isRemoving}
         />
         <Footer />
-
-        {/* Popups */}
-        {selectedPopup?.key === "editProfile" && (
-          <Popup title="Editar Perfil" onClose={closePopup} isOpen>
-            <EditProfile onUpdateUser={handleUpdateUser} onClose={closePopup} />
-          </Popup>
-        )}
-
-        {selectedPopup?.key === "editAvatar" && (
-          <Popup title="Editar Avatar" onClose={closePopup} isOpen>
-            <EditAvatar
-              onUpdateAvatar={handleUpdateAvatar}
-              onClose={closePopup}
-            />
-          </Popup>
-        )}
-
-        {selectedPopup?.key === "newCard" && (
-          <Popup title="Novo Card" onClose={closePopup} isOpen>
-            <NewCard onAddPlace={handleAddPlace} onClose={closePopup} />
-          </Popup>
-        )}
-
-        {selectedPopup?.type === "image" && (
-          <Popup onClose={closePopup} isOpen>
-            <img
-              src={selectedPopup.card.link}
-              alt={selectedPopup.card.name}
-              className="popup__image"
-            />
-            <p className="popup__caption">{selectedPopup.card.name}</p>
-          </Popup>
-        )}
-
-        {/* Remove Card */}
-        {cardToRemove && (
-          <RemoveCard
-            isOpen={!!cardToRemove}
-            onClose={handleCloseRemoveCard}
-            onConfirmDelete={handleConfirmRemoveCard}
-            isRemoving={isRemoving}
-          />
-        )}
       </div>
     </CurrentUserContext.Provider>
   );

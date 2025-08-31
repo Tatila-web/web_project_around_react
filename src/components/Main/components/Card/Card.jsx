@@ -12,12 +12,11 @@ export default function Card({
   onCardDelete,
 }) {
   const isOwn = card.owner === currentUser._id;
-  const isLiked = card.isLiked;
 
   return (
     <div className="card__elements">
       {isOwn && (
-        <button className="card__btn-delete" onClick={onCardDelete}>
+        <button className="card__btn-delete" onClick={() => onCardDelete(card)}>
           <img
             className="card__delete-icon"
             src={deleteIcon}
@@ -35,16 +34,17 @@ export default function Card({
 
       <div className="card__description">
         <h2 className="card__text-description">{card.name}</h2>
+
         <div className="card__like-container">
           <button
             className={`card__btn-like ${
-              isLiked ? "card__btn-like_active" : ""
+              card.isLiked ? "card__btn-like_active" : ""
             }`}
-            onClick={onCardLike}
+            onClick={() => onCardLike(card)}
           >
             <img
               className="card__like"
-              src={isLiked ? likeIconActive : likeIcon}
+              src={card.isLiked ? likeIconActive : likeIcon}
               alt="Curtir"
             />
           </button>
