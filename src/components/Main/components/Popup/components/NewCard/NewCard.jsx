@@ -1,17 +1,19 @@
 import React from "react";
 import { useFormValidation } from "@hooks/useFormValidation";
 
-export default function NewCard() {
-  const { values, errors, isValid, handleChange } = useFormValidation({
-    "card-name": "",
-    link: "",
-  });
+export default function NewCard({ onAddPlace, onClose }) {
+  const { values, errors, isValid, handleChange, resetForm } =
+    useFormValidation({
+      "card-name": "",
+      link: "",
+    });
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!isValid) return;
-
-    console.log("Enviar novo card:", values);
+    onAddPlace({ name: values["card-name"], link: values.link });
+    resetForm();
+    if (onClose) onClose();
   }
 
   return (
@@ -31,13 +33,13 @@ export default function NewCard() {
           placeholder="Title"
           value={values["card-name"]}
           onChange={handleChange}
-          aria-describedby="card-name-error"
+          required
+          minLength="2"
         />
         <span
           className={`popup__input-error ${
             errors["card-name"] ? "popup__input-error_active" : ""
           }`}
-          id="card-name-error"
         >
           {errors["card-name"]}
         </span>
@@ -53,13 +55,12 @@ export default function NewCard() {
           placeholder="Image link"
           value={values.link}
           onChange={handleChange}
-          aria-describedby="card-link-error"
+          required
         />
         <span
           className={`popup__input-error ${
             errors.link ? "popup__input-error_active" : ""
           }`}
-          id="card-link-error"
         >
           {errors.link}
         </span>

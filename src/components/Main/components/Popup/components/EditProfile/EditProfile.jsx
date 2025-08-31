@@ -1,31 +1,28 @@
-import React, { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useFormValidation } from "@hooks/useFormValidation";
+import { CurrentUserContext } from "@contexts/CurrentUserContext"; // ✅ corrigido
 
-export default function EditProfile() {
-  // Passa os valores iniciais para o hook
+export default function EditProfile({ onClose }) {
+  const { currentUser, handleUpdateUser } = useContext(CurrentUserContext);
+
   const { values, errors, isValid, handleChange, resetForm } =
     useFormValidation({
-      name: "Jacques Cousteau",
-      about: "Explorador",
+      name: "",
+      about: "",
     });
 
-  // Se quiser que ao abrir o popup o formulário "resete" para esses valores (útil se reabrir)
   useEffect(() => {
-    resetForm(
-      {
-        name: "Jacques Cousteau",
-        about: "Explorador",
-      },
-      {},
-      true
-    ); // true para setar isValid = true, se quiser
-  }, [resetForm]);
+    if (currentUser?.name && currentUser?.about) {
+      resetForm({ name: currentUser.name, about: currentUser.about }, {}, true);
+    }
+    // só roda quando o id do user muda (não em todo render)
+  }, [currentUser?._id]);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!isValid) return;
-
-    console.log("Enviar perfil:", values);
+    handleUpdateUser({ name: values.name, about: values.about });
+    if (onClose) onClose();
   }
 
   return (
@@ -43,18 +40,16 @@ export default function EditProfile() {
           type="text"
           name="name"
           placeholder="Name"
-          value={values.name}
+          value={values.name || ""}
           onChange={handleChange}
           required
           minLength="2"
           maxLength="40"
-          aria-describedby="profile-name-error"
         />
         <span
           className={`popup__input-error ${
             errors.name ? "popup__input-error_active" : ""
           }`}
-          id="profile-name-error"
         >
           {errors.name}
         </span>
@@ -68,18 +63,16 @@ export default function EditProfile() {
           type="text"
           name="about"
           placeholder="About"
-          value={values.about}
+          value={values.about || ""}
           onChange={handleChange}
           required
           minLength="2"
           maxLength="200"
-          aria-describedby="profile-about-error"
         />
         <span
           className={`popup__input-error ${
             errors.about ? "popup__input-error_active" : ""
           }`}
-          id="profile-about-error"
         >
           {errors.about}
         </span>

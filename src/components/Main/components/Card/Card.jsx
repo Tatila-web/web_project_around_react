@@ -1,47 +1,63 @@
 import React from "react";
-import deleteIcon from "../../../../images/vetores/Vector_delete.png";
-import likeIcon from "../../../../images/vetores/Vector_like.png";
-import likeIconActive from "../../../../images/vetores/Vector_like_black.png";
-import "../../../../blocks/card.css";
+import "@blocks/card.css";
+import likeIcon from "@images/vetores/Vector_like.png";
+import likeIconActive from "@images/vetores/Vector_like_black.png";
+import deleteIcon from "@images/vetores/Vector_delete.png";
 
-export default function Card({ card, onCardClick }) {
-  const { name, link, isLiked } = card;
+export default function Card({
+  card,
+  currentUser,
+  onCardClick,
+  onCardLike,
+  onCardDelete,
+}) {
+  const isOwn = card.owner === currentUser._id;
+
+  const handleLikeClick = () => {
+    onCardLike(card);
+  };
+
+  const handleDeleteClick = () => {
+    onCardDelete(card);
+  };
 
   return (
-    <article className="card__elements">
-      {/* Imagem do card - abre popup ao clicar */}
-      <img
-        className="card__image"
-        src={link}
-        alt={name}
-        onClick={() => onCardClick && onCardClick(card)}
-      />
-
-      {/* Botão de deletar */}
-      <button
-        aria-label="Delete card"
-        className="card__btn-delete"
-        type="button"
-      >
-        <img src={deleteIcon} alt="Excluir" className="card__delete-icon" />
-      </button>
-
-      {/* Descrição e botão de curtir */}
-      <div className="card__description">
-        <h2 className="card__text-description">{name}</h2>
-
-        <button
-          aria-label="Like card"
-          type="button"
-          className={`card__btn-like ${isLiked ? "card__btn-like_active" : ""}`}
-        >
+    <div className="card__elements">
+      {isOwn && (
+        <button className="card__btn-delete" onClick={handleDeleteClick}>
           <img
-            src={isLiked ? likeIconActive : likeIcon}
-            alt={isLiked ? "Curtido" : "Curtir"}
-            className="card__like"
+            className="card__delete-icon"
+            src={deleteIcon}
+            alt="Excluir cartão"
           />
         </button>
+      )}
+
+      <img
+        className="card__image"
+        src={card.link}
+        alt={card.name}
+        onClick={() => onCardClick(card)}
+      />
+
+      <div className="card__description">
+        <h2 className="card__text-description">{card.name}</h2>
+
+        <div className="card__like-container">
+          <button
+            className={`card__btn-like ${
+              card.isLiked ? "card__btn-like_active" : ""
+            }`}
+            onClick={handleLikeClick}
+          >
+            <img
+              className="card__like"
+              src={card.isLiked ? likeIconActive : likeIcon}
+              alt="Curtir"
+            />
+          </button>
+        </div>
       </div>
-    </article>
+    </div>
   );
 }

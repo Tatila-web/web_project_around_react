@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function ImagePopup({ card, onClose }) {
+  useEffect(() => {
+    if (!card) return;
+    const handleEsc = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [card, onClose]);
+
   if (!card) return null;
 
   return (
     <div className="popup-image" onClick={onClose}>
       <div
         className="popup-image__content"
-        onClick={(e) => e.stopPropagation()} // evita fechar clicando na imagem
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           aria-label="Fechar popup de imagem"

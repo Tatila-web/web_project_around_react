@@ -17,15 +17,13 @@ export function useFormValidation(initialValues) {
     if (!value.trim()) {
       errorMessage = "Preencha este campo";
     } else {
-      if (name === "card-name" || name === "name" || name === "about") {
+      if (["card-name", "name", "about"].includes(name)) {
         if (value.trim().length < 2) {
           const length = value.trim().length;
-          errorMessage = `Aumente este texto para 2 ou mais caracteres (atualmente, está a utilizar ${length} caráter${
-            length === 1 ? "" : "es"
-          }).`;
+          errorMessage = `Aumente este texto para 2 ou mais caracteres (atualmente, está usando ${length}).`;
         }
       }
-      if (name === "link" || name === "avatar") {
+      if (["link", "avatar"].includes(name)) {
         const urlPattern = /^(https?:\/\/[^\s]+)$/i;
         if (!urlPattern.test(value.trim())) {
           errorMessage = "Por favor, insira uma URL válida";
@@ -33,18 +31,24 @@ export function useFormValidation(initialValues) {
       }
     }
 
-    setValues((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: errorMessage }));
+    // Usa prev para evitar estado "stale"
+    setValues((prev) => {
+      const newValues = { ...prev, [name]: value };
 
-    const newValues = { ...values, [name]: value };
-    const newErrors = { ...errors, [name]: errorMessage };
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
 
-    const allFieldsFilled = Object.values(newValues).every(
-      (val) => val.trim() !== ""
-    );
-    const noErrors = Object.values(newErrors).every((err) => err === "");
+      const allFieldsFilled = Object.values(newValues).every(
+        (val) => val.trim() !== ""
+      );
+      const noErrors = Object.values({
+        ...errors,
+        [name]: errorMessage,
+      }).every((err) => err === "");
 
-    setIsValid(allFieldsFilled && noErrors);
+      setIsValid(allFieldsFilled && noErrors);
+
+      return newValues;
+    });
   }
 
   function resetForm(

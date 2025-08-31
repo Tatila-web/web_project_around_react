@@ -280,6 +280,62 @@
 .popup-image__hidden {
   display: none;
 }
+/* === Popup de confirmação de remoção === */
+.popup_type_remove-card {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.popup_type_remove-card.popup_opened {
+  display: flex;
+}
+
+/* Container interno igual ao de avatar/edit profile */
+.popup_type_remove-card .popup__container {
+  position: relative;
+  width: 430px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 40px 36px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.popup_type_remove-card .popup__profile-edit {
+  font-weight: 900;
+  font-size: 24px;
+  color: #000000;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.popup_type_remove-card .popup__confirm-submit-button {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21.78px;
+  width: 358px;
+  height: 50px;
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+}
+
+.popup_type_remove-card .popup__confirm-submit-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.popup_type_remove-card .popup__close {
+  top: -45px;
+  right: -40px;
+}
 
 /* === MEDIA QUERIES === */
 @media screen and (max-width: 640px) {
