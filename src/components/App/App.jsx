@@ -130,6 +130,7 @@ function App() {
           cardToRemove={cardToRemove}
           handleConfirmRemoveCard={handleConfirmRemoveCard}
           isRemoving={isRemoving}
+          handleAddPlace={handleAddPlace} // <- prop passada pro Main
         />
         <Footer />
       </div>

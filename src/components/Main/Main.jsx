@@ -5,6 +5,7 @@ import Popup from "@componentsMain/Popup/Popup.jsx";
 import EditProfile from "@componentsMain/Popup/EditProfile/EditProfile.jsx";
 import EditAvatar from "@componentsMain/Popup/EditAvatar/EditAvatar.jsx";
 import NewCard from "@componentsMain/Popup/NewCard/NewCard.jsx";
+import ImagePopup from "@componentsMain/Popup/ImagePopup/ImagePopup.jsx";
 import RemoveCard from "@componentsMain/Popup/RemoveCard/RemoveCard.jsx";
 
 // Ícones
@@ -22,12 +23,14 @@ export default function Main({
   cardToRemove,
   handleConfirmRemoveCard,
   isRemoving,
+  handleAddPlace, // <- Recebendo a função do App.jsx
 }) {
   const { currentUser } = useContext(CurrentUserContext);
   const safeUser = currentUser || { _id: "", name: "", about: "", avatar: "" };
 
   return (
     <main className="content">
+      {/* Perfil */}
       <section className="profile">
         <div className="profile__avatar-container">
           <img
@@ -79,6 +82,7 @@ export default function Main({
         </button>
       </section>
 
+      {/* Cards */}
       <section className="card">
         {cards.length === 0 && <p>Nenhum card ainda</p>}
         {cards.map((cardItem) => (
@@ -99,26 +103,23 @@ export default function Main({
           <EditProfile onClose={closePopup} />
         </Popup>
       )}
+
       {selectedPopup?.key === "editAvatar" && (
         <Popup title="Editar Avatar" onClose={closePopup} isOpen>
           <EditAvatar onClose={closePopup} />
         </Popup>
       )}
+
       {selectedPopup?.key === "newCard" && (
         <Popup title="Novo Card" onClose={closePopup} isOpen>
-          <NewCard onClose={closePopup} />
+          <NewCard onClose={closePopup} onAddPlace={handleAddPlace} />
         </Popup>
       )}
+
       {selectedPopup?.type === "image" && (
-        <Popup onClose={closePopup} isOpen>
-          <img
-            src={selectedPopup.card.link}
-            alt={selectedPopup.card.name}
-            className="popup__image"
-          />
-          <p className="popup__caption">{selectedPopup.card.name}</p>
-        </Popup>
+        <ImagePopup card={selectedPopup.card} onClose={closePopup} />
       )}
+
       {cardToRemove && (
         <RemoveCard
           isOpen={!!cardToRemove}

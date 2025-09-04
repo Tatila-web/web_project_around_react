@@ -6,21 +6,23 @@ export default function EditAvatar({ onClose }) {
   const { currentUser, handleUpdateAvatar } = useContext(CurrentUserContext);
 
   const { values, errors, isValid, handleChange, resetForm } =
-    useFormValidation({
-      avatar: "",
-    });
+    useFormValidation({ avatar: "" });
 
-  // Corrigido: só resetar se o avatar mudar
+  // Preencher o input com o avatar atual
   useEffect(() => {
     if (currentUser?.avatar && values.avatar !== currentUser.avatar) {
       resetForm({ avatar: currentUser.avatar }, {}, true);
     }
-  }, [currentUser?.avatar]); // ✅ depende só do avatar
+  }, [currentUser?.avatar]);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!isValid) return;
-    handleUpdateAvatar({ avatar: values.avatar });
+
+    // Envia apenas a URL para a API (string, não objeto)
+    handleUpdateAvatar(values.avatar);
+
+    resetForm();
     if (onClose) onClose();
   }
 
@@ -51,6 +53,7 @@ export default function EditAvatar({ onClose }) {
           {errors.avatar}
         </span>
       </label>
+
       <button
         type="submit"
         className={`popup__submit-form ${
